@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>301C558A-6B56-4D3F-A7A3-C6338C7F3FCE</string>
+	<key>IDESourceControlProjectName</key>
+	<string>beatEvent_01</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F95144F615A6E3E0A85A63E3E8481928BB6144CC</key>
+		<string>https://github.com/phsn/beatEvent_01</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>beatEvent_01.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F95144F615A6E3E0A85A63E3E8481928BB6144CC</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/phsn/beatEvent_01</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F95144F615A6E3E0A85A63E3E8481928BB6144CC</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F95144F615A6E3E0A85A63E3E8481928BB6144CC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>beatEvent_01</string>
+		</dict>
+	</array>
+</dict>
+</plist>

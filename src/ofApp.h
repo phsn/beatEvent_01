@@ -1,6 +1,13 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxOsc.h"
+#include "beatThread.h"
+
+#define PORT 8000
+#define HOST "192.168.178.73"
+
+#define BEAT_BUFFER 131072
 
 class ofApp : public ofBaseApp{
 
@@ -19,4 +26,16 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+    
+    ofxOscReceiver receiver;
+    ofxOscSender sender;
+    
+    beatThread beatSyncThread;
+
+    
+    int BPM;
+    float bTime;
+    float tickTime;
+    float beatStart;
+    bool tickSent;
 };
