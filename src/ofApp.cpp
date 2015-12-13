@@ -43,11 +43,35 @@ void ofApp::update(){
         }
         if(m.getAddress() == "/Tap/x" && m.getArgAsFloat(0) == 1) {
             beatSyncThread.tap();
-            cout << "TAP || BPM = " << beatSyncThread.getBPM() << endl;
+            //cout << "TAP || BPM = " << beatSyncThread.getBPM() << endl;
         }
         if(m.getAddress() == "/BPM_Slider/x") {
             beatSyncThread.setBPM(int(m.getArgAsFloat(0)*300.0f));
-            cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+            //cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+        }
+        if(m.getAddress() == "/BPM_Mult/x") {
+            
+            if(   int(m.getArgAsFloat(0)) == 0
+               && int(m.getArgAsFloat(1)) == 0
+               && int(m.getArgAsFloat(2)) == 0
+               && int(m.getArgAsFloat(3)) == 0) {
+                
+                beatSyncThread.resetMult();
+            } else {
+                if(int(m.getArgAsFloat(0)) == 1) {
+                    beatSyncThread.multBPM(0.5);
+                } else if(int(m.getArgAsFloat(1)) == 1) {
+                    beatSyncThread.multBPM(2);
+                } else if(int(m.getArgAsFloat(2)) == 1) {
+                    beatSyncThread.multBPM(4);
+                } else if(int(m.getArgAsFloat(3)) == 1) {
+                    beatSyncThread.multBPM(8);
+                }
+            };
+            //cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+        }
+        if(m.getAddress() == "/clearTaps/x" && m.getArgAsFloat(0) == 1) {
+            beatSyncThread.clearTaps();
         }
     }
     
@@ -55,8 +79,8 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    circleOffset += (t_circleOffset-circleOffset)*0.7;
-    circleSize += (t_circleSize-circleSize)*0.8;
+    circleOffset += (t_circleOffset-circleOffset)*0.5;
+    circleSize += (t_circleSize-circleSize)*0.4;
     
     circleColor = ofColor(circleColor.r + (t_circleColor.r - circleColor.r)*0.4,
                           circleColor.g + (t_circleColor.g - circleColor.g)*0.4,
@@ -77,7 +101,7 @@ void ofApp::onTick(ofVec2f &tObj) {
     m.addFloatArg((tObj.y)/3.0f);
     sender.sendMessage(m);
     
-    cout << "TICK " << (tObj.y)+1 << endl;
+    //cout << "TICK " << (tObj.y)+1 << endl;
 
 }
 
@@ -90,7 +114,6 @@ void ofApp::onTick8(ofVec2f &tObj) {
         t_circleSize = ofGetHeight()/2-20;
     }
     //t_circleSize = ofGetHeight()/2-20;
-
 }
 
 //--------------------------------------------------------------

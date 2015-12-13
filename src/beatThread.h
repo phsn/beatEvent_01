@@ -30,7 +30,7 @@ public:
         tickStart = barStart;
         tick8Start = tickStart;
         
-        tickTime = 60.0f/BPM;
+        tickTime = 60.0f/mBPM;
         tickSent = false;
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
@@ -51,7 +51,18 @@ public:
     
     void setBPM(int beats) {
         BPM = beats;
-        tickTime = 60.0f/BPM;
+        mBPM = BPM;
+        tickTime = 60.0f/mBPM;
+    }
+    
+    void multBPM(float mult) {
+        mBPM = BPM*mult;
+        tickTime = 60.0f/mBPM;
+    }
+    
+    void resetMult() {
+        mBPM = BPM;
+        tickTime = 60.0f/mBPM;
     }
     
     int getBPM() {
@@ -67,7 +78,7 @@ public:
             if(lock())
             {
                 if(SYNC) {
-                    beatStart = ofGetElapsedTimef()-tickTime-0.07;
+                    beatStart = ofGetElapsedTimef()-tickTime-tickTime/8.0f;
                     barStart = beatStart;
                     tickStart = beatStart;
                     tick8Start = tickStart;
@@ -94,6 +105,8 @@ public:
     
     void tick() {
         
+        if(ofGetElapsedTimef()-lastTick > tickTime/4.0f) {
+        
         ofVec2f tData = ofVec2f(tick8Start, beat8State);
         ofNotifyEvent(tick8Event, tData, this);
         
@@ -112,7 +125,9 @@ public:
         
         beat8State = (beat8State+1)%8;
         tick8Start += tickTime/2.0f;
-        
+            
+            
+        }
 
     }
     
@@ -143,9 +158,14 @@ public:
         
     }
     
+    void clearTaps() {
+        tapTimes.clear();
+    }
+    
 protected:
 
     int BPM=120;
+    int mBPM=120;
     int beatState;
     int beat8State;
 
@@ -157,7 +177,7 @@ protected:
     float tickStart;
     float tick8Start;
     bool tickSent;
-    
+    float lastTick;
     float lastTap;
     vector<float> tapTimes;
     
