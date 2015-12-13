@@ -6,10 +6,13 @@ void ofApp::setup(){
     sender.setup(HOST, PORT);
     
     ofAddListener(beatSyncThread.tickEvent, this, &ofApp::onTick);
+    ofAddListener(beatSyncThread.tick8Event, this, &ofApp::onTick8);
     ofAddListener(beatSyncThread.barEvent, this, &ofApp::onBar);
+    ofAddListener(beatSyncThread.bpmChange, this, &ofApp::onBPMChange);
+
     beatSyncThread.start();
     
-    BPM = 124;
+    BPM = 126;
     beatStart = ofGetElapsedTimef();
     tickTime = 60.0f/BPM;
     tickSent = false;
@@ -18,6 +21,7 @@ void ofApp::setup(){
     ofSetCircleResolution(64);
     circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
     circleSize = ofGetHeight()/2-20;
+    circleOffset = 0;
 }
 
 //--------------------------------------------------------------
@@ -37,36 +41,85 @@ void ofApp::update(){
                 lastSync = ofGetElapsedTimef();
             }
         }
+        if(m.getAddress() == "/Tap/x" && m.getArgAsFloat(0) == 1) {
+            beatSyncThread.tap();
+            cout << "TAP || BPM = " << beatSyncThread.getBPM() << endl;
+        }
+        if(m.getAddress() == "/BPM_Slider/x") {
+            beatSyncThread.setBPM(int(m.getArgAsFloat(0)*300.0f));
+            cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+        }
     }
     
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    circleOffset += (t_circleOffset-circleOffset)*0.7;
+    circleSize += (t_circleSize-circleSize)*0.8;
+    
+    circleColor = ofColor(circleColor.r + (t_circleColor.r - circleColor.r)*0.4,
+                          circleColor.g + (t_circleColor.g - circleColor.g)*0.4,
+                          circleColor.b + (t_circleColor.b - circleColor.b)*0.4,
+                          255.0);
+
     ofSetColor(circleColor);
-    ofCircle(ofGetWidth()/2, ofGetHeight()/2,circleSize);
+    ofCircle(ofGetWidth()/2+circleOffset, ofGetHeight()/2,circleSize);
 }
 
 //--------------------------------------------------------------
 void ofApp::onTick(ofVec2f &tObj) {
-    circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
+    //circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
+    t_circleOffset = ofRandomf()*100.0f;
     
     ofxOscMessage m;
     m.setAddress("/BeatState/x");
     m.addFloatArg((tObj.y)/3.0f);
     sender.sendMessage(m);
+    
+    cout << "TICK " << (tObj.y)+1 << endl;
+
+}
+
+//--------------------------------------------------------------
+void ofApp::onTick8(ofVec2f &tObj) {
+    //t_circleOffset = sin(ofGetElapsedTimef()*PI*BPM*4)*300;
+    if(int(tObj.y)%2 == 0) {
+        t_circleSize = ofRandom((ofGetHeight()/2-20));
+    } else {
+        t_circleSize = ofGetHeight()/2-20;
+    }
+    //t_circleSize = ofGetHeight()/2-20;
+
 }
 
 //--------------------------------------------------------------
 void ofApp::onBar(ofVec2f &bObj) {
     //circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
-    circleSize = ofRandom(ofGetHeight()/2-20);
+    t_circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
 
+
+}
+
+
+//--------------------------------------------------------------
+void ofApp::onBPMChange(ofVec2f &tObj) {
+    //circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
+    
+    
+    beatSyncThread.setBPM(tObj.x);
+
+    ofxOscMessage m;
+    m.setAddress("/BPM_Slider/x");
+    m.addFloatArg(tObj.x/300.0f);
+    sender.sendMessage(m);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
+    if(key == 'c') {
+        beatSyncThread.stop();
+    }
 }
 
 //--------------------------------------------------------------
@@ -91,9 +144,9 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    beatSyncThread.setBPM(x/4);
-    cout << x/4 << endl;
-    beatSyncThread.setBPM(124);
+    //beatSyncThread.setBPM(x/4);
+    //cout << x/4 << endl;
+    //beatSyncThread.setBPM(BPM);
 
 }
 

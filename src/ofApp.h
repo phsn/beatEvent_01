@@ -15,8 +15,10 @@ public:
     void setup();
     void update();
     void draw();
+    void onTick8(ofVec2f & tObj);
     void onTick(ofVec2f & tObj);
     void onBar(ofVec2f & bObj);
+    void onBPMChange(ofVec2f & tObj);
 
     
     void keyPressed(int key);
@@ -44,5 +46,10 @@ public:
     bool tickSent;
     
     ofColor circleColor;
+    ofColor t_circleColor;
     float circleSize;
+    float t_circleSize;
+    float circleOffset;
+    float t_circleOffset;
+
 };
