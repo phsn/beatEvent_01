@@ -1,25 +1,31 @@
 #pragma once
 
-
 #include "ofThread.h"
-
 
 /// This is a simple example of a ThreadedObject created by extending ofThread.
 /// It contains data (count) that will be accessed from within and outside the
 /// thread and demonstrates several of the data protection mechanisms (aka
 /// mutexes).
+
 class beatThread: public ofThread
 {
 public:
     /// Create a ThreadedObject and initialize the member
     /// variable in an initialization list.
-    beatThread(): count(0)
-    {
+    beatThread(){
     }
     
+    ofEvent<ofVec2f> tickEvent;
+    ofEvent<ofVec2f> barEvent;
+
     /// Start the thread.
     void start()
     {
+        SYNC = false;
+        beatStart = ofGetElapsedTimef();
+        barStart = beatStart;
+        tickTime = 60.0f/BPM;
+        tickSent = false;
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         startThread();
@@ -33,6 +39,15 @@ public:
         stopThread();
     }
     
+    void syncBeat() {
+        SYNC = true;
+    }
+    
+    void setBPM(int beats) {
+        BPM = beats;
+        tickTime = 60.0f/BPM;
+    }
+    
     /// Our implementation of threadedFunction.
     void threadedFunction()
     {
@@ -41,20 +56,19 @@ public:
             // Attempt to lock the mutex.  If blocking is turned on,
             if(lock())
             {
-                // The mutex is now locked and the "count"
-                // variable is protected.  Time to modify it.
-                count++;
-                
-                // Here, we simply cause it to reset to zero if it gets big.
-                if(count > 50000) count = 0;
-                
-                // Unlock the mutex.  This is only
-                // called if lock() returned true above.
+                if(SYNC) {
+                    beatStart = ofGetElapsedTimef()-tickTime-0.07;
+                    barStart = beatStart;
+                    tickStart = beatStart;
+                    beatState = 0;
+                    SYNC = false;
+                }
+
+                if(ofGetElapsedTimef()-tickStart >= tickTime) {
+                    this->tick();
+                }
+                sleep(10);
                 unlock();
-                
-                cout << count << endl;
-                // Sleep for 1 second.
-                sleep(1000);
             }
             else
             {
@@ -66,24 +80,33 @@ public:
         }
     }
     
-    /// This drawing function cannot be called from the thread itself because
-    /// it includes OpenGL calls (ofDrawBitmapString).
-  
-    
-    // Use ofScopedLock to protect a copy of count while getting a copy.
-    int getCount()
-    {
-        ofScopedLock lock(mutex);
-        return count;
+    void tick() {
+        
+        ofVec2f tData = ofVec2f(tickStart, beatState);
+        ofNotifyEvent(tickEvent, tData, this);
+        if(beatState == 0) {
+            ofVec2f bData = ofVec2f(tickStart, beatState);
+            ofNotifyEvent(barEvent, bData, this);
+        }
+        
+        //cout << "TICK " << beatState+1 << endl;
+        beatState = (beatState+1)%4;
+        tickStart += tickTime;
+        if(beatState == 0) barStart = tickStart;
     }
     
 protected:
-    // This is a simple variable that we aim to always access from both the
-    // main thread AND this threaded object.  Therefore, we need to protect it
-    // with the mutex.  In the case of simple numerical variables, some
-    // garuntee thread safety for small integral types, but for the sake of
-    // illustration, we use an int.  This int could represent ANY complex data
-    // type that needs to be protected.
-    int count;
+
+    int BPM=1;
+    int beatState;
+    
+    float bTime;
+    float tickTime;
+    float beatStart;
+    float barStart;
+    float tickStart;
+    bool tickSent;
+    
+    bool SYNC;
     
 };
