@@ -56,7 +56,7 @@ public:
     }
     
     void multBPM(float mult) {
-        mBPM = BPM*mult;
+        mBPM = int(float(BPM)*mult);
         tickTime = 60.0f/mBPM;
     }
     
@@ -78,7 +78,7 @@ public:
             if(lock())
             {
                 if(SYNC) {
-                    beatStart = ofGetElapsedTimef()-tickTime-tickTime/8.0f;
+                    beatStart = ofGetElapsedTimef()-tickTime-tickTime/8.0f-0.1;
                     barStart = beatStart;
                     tickStart = beatStart;
                     tick8Start = tickStart;

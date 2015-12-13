@@ -57,18 +57,55 @@ void ofApp::update(){
                && int(m.getArgAsFloat(3)) == 0) {
                 
                 beatSyncThread.resetMult();
+                
             } else {
                 if(int(m.getArgAsFloat(0)) == 1) {
-                    beatSyncThread.multBPM(0.5);
+                    beatSyncThread.multBPM(0.25);
                 } else if(int(m.getArgAsFloat(1)) == 1) {
-                    beatSyncThread.multBPM(2);
+                    beatSyncThread.multBPM(0.5);
                 } else if(int(m.getArgAsFloat(2)) == 1) {
-                    beatSyncThread.multBPM(4);
+                    beatSyncThread.multBPM(2);
                 } else if(int(m.getArgAsFloat(3)) == 1) {
-                    beatSyncThread.multBPM(8);
+                    beatSyncThread.multBPM(4);
                 }
             };
+            
             //cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+            
+        }
+        if(m.getAddress() == "/BPM_MultBar/x") {
+            
+            float multbarVal = (1.0f-m.getArgAsFloat(0))*6.0f+1.0f;
+            //cout << "MULTBAR " << multbarVal << endl;
+            if(int(multbarVal) == 1) {
+                
+                beatSyncThread.resetMult();
+                
+            } else {
+                
+                beatSyncThread.multBPM(multbarVal);
+
+            };
+            
+            //cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+            
+        }
+        if(m.getAddress() == "/BPM_MultBar_Zero/x") {
+            
+            float multbarVal = (1.0f-m.getArgAsFloat(0));
+            //cout << "MULTBAR " << multbarVal << endl;
+            if(int(multbarVal) == 1) {
+                
+                beatSyncThread.resetMult();
+                
+            } else {
+                
+                beatSyncThread.multBPM(multbarVal);
+                
+            };
+            
+            cout << "BPM ADJUST || BPM = " << beatSyncThread.getBPM() << endl;
+            
         }
         if(m.getAddress() == "/clearTaps/x" && m.getArgAsFloat(0) == 1) {
             beatSyncThread.clearTaps();
@@ -120,7 +157,6 @@ void ofApp::onTick8(ofVec2f &tObj) {
 void ofApp::onBar(ofVec2f &bObj) {
     //circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
     t_circleColor = ofColor(ofRandom(255.0f),ofRandom(255.0f),ofRandom(255.0f),255.0);
-
 
 }
 
